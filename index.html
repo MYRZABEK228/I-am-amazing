@@ -3,68 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Түстер ойыны</title>
+  <title>Қай түс?</title>
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background: #0d1117;
+      background-color: #1e293b;
       color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      flex-direction: column;
-      text-align: center;
     }
-
     h1 {
-      font-size: 2rem;
-      color: #ffcc00;
+      color: #22d3ee;
     }
-
     #colorName {
       font-size: 2rem;
+      margin: 20px 0;
       font-weight: bold;
-      margin: 20px;
     }
-
     button {
-      background: #00b4d8;
-      color: white;
-      border: none;
-      padding: 15px 30px;
-      font-size: 1rem;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.3s;
       margin: 10px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
     }
-
     button:hover {
-      background: #0077b6;
+      background-color: #2563eb;
+      color: white;
     }
-
-    .hidden {
-      display: none;
-    }
-
     #score {
       margin-top: 20px;
       font-size: 1.2rem;
     }
+    #gameOver {
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <h1>Түстер сәйкестігін табыңыз</h1>
-  <p id="instructions">Түстің аты мен түсі сәйкес келсе, "Сәйкес!" батырмасын басыңыз. Қателессеңіз, ойын бітеді.</p>
+  <h1>Қай түс?</h1>
+  <p>Сөздің түсін дұрыс анықтап, жауап беріңіз!</p>
   <div id="game">
     <div id="colorName"></div>
-    <button id="matchButton" onclick="checkMatch(true)">Сәйкес!</button>
-    <button id="notMatchButton" onclick="checkMatch(false)">Сәйкес емес!</button>
+    <div id="answers"></div>
     <p id="score">Ұпай: 0</p>
   </div>
-  <div id="gameOver" class="hidden">
+  <div id="gameOver">
     <h2>Ойын бітті!</h2>
     <p id="finalScore"></p>
     <button onclick="restartGame()">Қайта бастау</button>
@@ -74,17 +66,18 @@
     const colors = [
       { name: "Қызыл", color: "red" },
       { name: "Көк", color: "blue" },
-      { name: "Сары", color: "yellow" },
       { name: "Жасыл", color: "green" },
+      { name: "Сары", color: "yellow" },
       { name: "Күлгін", color: "purple" },
       { name: "Қара", color: "black" },
     ];
 
     let score = 0;
+    let isWordColorCorrect = true; // Бұл дұрыс жауаптың кезек-кезек өзгеруін қадағалайды
     let currentColor = {};
-    let isMatching = false;
 
     const colorNameElement = document.getElementById("colorName");
+    const answersElement = document.getElementById("answers");
     const scoreElement = document.getElementById("score");
     const gameElement = document.getElementById("game");
     const gameOverElement = document.getElementById("gameOver");
@@ -92,30 +85,54 @@
 
     function startGame() {
       score = 0;
-      gameOverElement.classList.add("hidden");
-      gameElement.classList.remove("hidden");
+      isWordColorCorrect = true;
+      gameOverElement.style.display = "none";
+      gameElement.style.display = "block";
       generateColor();
     }
 
     function generateColor() {
-      const randomName = colors[Math.floor(Math.random() * colors.length)];
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      const wordColor = colors[Math.floor(Math.random() * colors.length)];
+      const textColor = colors[Math.floor(Math.random() * colors.length)];
 
       currentColor = {
-        name: randomName.name,
-        color: randomColor.color,
+        name: wordColor.name,
+        color: textColor.color,
+        textName: textColor.name,
       };
 
-      isMatching = randomName.name === randomColor.name;
+      colorNameElement.textContent = wordColor.name;
+      colorNameElement.style.color = textColor.color;
 
-      colorNameElement.textContent = currentColor.name;
-      colorNameElement.style.color = currentColor.color;
+      generateAnswers();
     }
 
-    function checkMatch(match) {
-      if (match === isMatching) {
+    function generateAnswers() {
+      answersElement.innerHTML = "";
+
+      const correctAnswer = isWordColorCorrect
+        ? `Жазылған сөздің түсі: ${currentColor.name}`
+        : `Әріптің түсі: ${currentColor.textName}`;
+
+      const incorrectAnswer = isWordColorCorrect
+        ? `Әріптің түсі: ${currentColor.textName}`
+        : `Жазылған сөздің түсі: ${currentColor.name}`;
+
+      [correctAnswer, incorrectAnswer]
+        .sort(() => Math.random() - 0.5)
+        .forEach((answer) => {
+          const button = document.createElement("button");
+          button.textContent = answer;
+          button.onclick = () => checkAnswer(answer, correctAnswer);
+          answersElement.appendChild(button);
+        });
+    }
+
+    function checkAnswer(answer, correctAnswer) {
+      if (answer === correctAnswer) {
         score++;
         scoreElement.textContent = `Ұпай: ${score}`;
+        isWordColorCorrect = !isWordColorCorrect; // Жауап кезегін ауыстыру
         generateColor();
       } else {
         endGame();
@@ -123,9 +140,9 @@
     }
 
     function endGame() {
-      gameElement.classList.add("hidden");
-      gameOverElement.classList.remove("hidden");
-      finalScoreElement.textContent = `Сіздің соңғы ұпайыңыз: ${score}`;
+      gameElement.style.display = "none";
+      gameOverElement.style.display = "block";
+      finalScoreElement.textContent = `Сіздің ұпайыңыз: ${score}`;
     }
 
     function restartGame() {
