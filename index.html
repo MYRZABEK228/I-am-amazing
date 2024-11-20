@@ -107,7 +107,10 @@
 
     function generateColor() {
       const wordColor = colors[Math.floor(Math.random() * colors.length)];
-      const textColor = colors[Math.floor(Math.random() * colors.length)];
+      let textColor;
+      do {
+        textColor = colors[Math.floor(Math.random() * colors.length)];
+      } while (wordColor.color === textColor.color); // Әріптің түсі сөздің түсінен өзгеше болуы керек
 
       currentColor = {
         name: wordColor.name,
@@ -116,7 +119,7 @@
       };
 
       colorNameElement.textContent = wordColor.name; 
-      colorNameElement.style.color = textColor.color; // Жазылған сөздің түсін көрсету
+      colorNameElement.style.color = textColor.color; // Жазылған сөздің түсі
 
       generateAnswers();
     }
