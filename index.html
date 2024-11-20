@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Түстер ойыны</title>
+  <title>Түстер Ойыны</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
       background-color: #1e293b;
       color: white;
+      text-align: center;
       margin: 0;
       padding: 0;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      flex-direction: column;
     }
     h1 {
       color: #22d3ee;
@@ -26,75 +26,115 @@
       font-weight: bold;
       margin: 20px;
     }
-    .btn {
-      background-color: #3b82f6;
-      color: white;
-      border: none;
+    button {
+      margin: 10px;
       padding: 15px 30px;
       font-size: 1.2rem;
+      border: none;
       border-radius: 10px;
       cursor: pointer;
-      margin: 10px;
       transition: background-color 0.3s;
     }
-    .btn:hover {
+    button:hover {
       background-color: #2563eb;
+      color: white;
     }
     #score {
       margin-top: 20px;
       font-size: 1.2rem;
     }
+    #gameOver {
+      display: none;
+    }
   </style>
 </head>
 <body>
   <h1>Түстер ойыны</h1>
-  <p>Берілген түстің дұрыс жауабын таңдаңыз!</p>
+  <p>Берілген түске сәйкес дұрыс жауапты таңдаңыз!</p>
   <div id="colorWord">Қызыл</div>
-  <button class="btn" onclick="checkAnswer(1)">1-вариант</button>
-  <button class="btn" onclick="checkAnswer(2)">2-вариант</button>
+  <button id="option1" onclick="checkAnswer(1)">1-вариант</button>
+  <button id="option2" onclick="checkAnswer(2)">2-вариант</button>
   <p id="score">Ұпай: 0</p>
+  <div id="gameOver">
+    <h2>Ойын аяқталды!</h2>
+    <p id="finalScore"></p>
+    <button onclick="restartGame()">Қайта бастау</button>
+  </div>
 
   <script>
     const colors = ["Қызыл", "Көк", "Жасыл", "Сары", "Қара", "Ақ"];
-    const answers = [];
     let currentIndex = 0;
     let score = 0;
+    let isGameOver = false;
+    let isNextAnswerColor = true; // Кезек-кезек дұрыс жауап: true - боялған түс, false - сөздің атауы
 
     const colorWordElement = document.getElementById("colorWord");
+    const option1Button = document.getElementById("option1");
+    const option2Button = document.getElementById("option2");
     const scoreElement = document.getElementById("score");
+    const gameOverElement = document.getElementById("gameOver");
+    const finalScoreElement = document.getElementById("finalScore");
 
-    function generateColors() {
-      for (let i = 0; i < colors.length; i++) {
-        answers.push(i % 2 === 0 ? 1 : 2); // Кезекпен 1 немесе 2 болады
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
       }
+      return array;
     }
 
-    function displayNextColor() {
-      if (currentIndex >= colors.length) {
-        alert(`Ойын аяқталды! Сіздің ұпайыңыз: ${score}`);
-        currentIndex = 0;
-        score = 0;
-        scoreElement.textContent = `Ұпай: ${score}`;
-      }
+    function generateNewQuestion() {
+      if (isGameOver) return;
+
+      currentIndex = Math.floor(Math.random() * colors.length);
+      const textColor = colors[Math.floor(Math.random() * colors.length)];
       colorWordElement.textContent = colors[currentIndex];
+      colorWordElement.style.color = textColor;
+
+      const correctAnswer = isNextAnswerColor ? textColor : colors[currentIndex];
+      const wrongAnswer = colors.find(color => color !== correctAnswer);
+
+      const options = shuffleArray([correctAnswer, wrongAnswer]);
+      option1Button.textContent = options[0];
+      option2Button.textContent = options[1];
+
+      option1Button.dataset.correct = options[0] === correctAnswer ? "true" : "false";
+      option2Button.dataset.correct = options[1] === correctAnswer ? "true" : "false";
     }
 
-    function checkAnswer(selectedOption) {
-      if (selectedOption === answers[currentIndex]) {
+    function checkAnswer(option) {
+      if (isGameOver) return;
+
+      const isCorrect = option === 1 
+        ? option1Button.dataset.correct === "true" 
+        : option2Button.dataset.correct === "true";
+
+      if (isCorrect) {
         score++;
         scoreElement.textContent = `Ұпай: ${score}`;
+        isNextAnswerColor = !isNextAnswerColor; // Кезекті ауыстыру
+        generateNewQuestion();
       } else {
-        alert("Қате! Ойын аяқталды.");
-        currentIndex = 0;
-        score = 0;
-        scoreElement.textContent = `Ұпай: ${score}`;
+        endGame();
       }
-      currentIndex++;
-      displayNextColor();
     }
 
-    generateColors();
-    displayNextColor();
+    function endGame() {
+      isGameOver = true;
+      gameOverElement.style.display = "block";
+      finalScoreElement.textContent = `Сіздің ұпайыңыз: ${score}`;
+    }
+
+    function restartGame() {
+      score = 0;
+      isGameOver = false;
+      isNextAnswerColor = true;
+      scoreElement.textContent = `Ұпай: ${score}`;
+      gameOverElement.style.display = "none";
+      generateNewQuestion();
+    }
+
+    generateNewQuestion();
   </script>
 </body>
 </html>
