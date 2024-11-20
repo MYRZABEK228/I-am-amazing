@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Түстер ойыны</title>
+  <title>Қай түс?</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -21,17 +21,17 @@
     h1 {
       color: #22d3ee;
     }
-    #colorWord {
-      font-size: 3rem;
+    #colorName {
+      font-size: 2rem;
+      margin: 20px 0;
       font-weight: bold;
-      margin: 20px;
     }
     button {
       margin: 10px;
-      padding: 15px 30px;
-      font-size: 1.2rem;
+      padding: 10px 20px;
+      font-size: 1rem;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s;
     }
@@ -49,92 +49,107 @@
   </style>
 </head>
 <body>
-  <h1>Түстер ойыны</h1>
-  <p>Берілген түске сәйкес дұрыс жауапты таңдаңыз!</p>
-  <div id="colorWord">Қызыл</div>
-  <button id="option1" onclick="checkAnswer(1)">1-вариант</button>
-  <button id="option2" onclick="checkAnswer(2)">2-вариант</button>
-  <p id="score">Ұпай: 0</p>
+  <h1>Қай түс?</h1>
+  <p>Сөздің түсін дұрыс анықтап, жауап беріңіз!</p>
+  <div id="game">
+    <div id="colorName"></div>
+    <div id="answers"></div>
+    <p id="score">Ұпай: 0</p>
+  </div>
   <div id="gameOver">
-    <h2>Ойын аяқталды!</h2>
+    <h2>Ойын бітті!</h2>
     <p id="finalScore"></p>
     <button onclick="restartGame()">Қайта бастау</button>
   </div>
 
   <script>
-    const colors = ["Қызыл", "Көк", "Жасыл", "Сары", "Қара", "Ақ"];
-    let currentIndex = 0;
-    let score = 0;
-    let isGameOver = false;
-    let isNextAnswerColor = true; // Кезек-кезек дұрыс жауап: true - боялған түс, false - сөздің атауы
+    const colors = [
+      { name: "Қызыл", color: "red" },
+      { name: "Көк", color: "blue" },
+      { name: "Жасыл", color: "green" },
+      { name: "Сары", color: "yellow" },
+      { name: "Күлгін", color: "purple" },
+      { name: "Қара", color: "black" },
+    ];
 
-    const colorWordElement = document.getElementById("colorWord");
-    const option1Button = document.getElementById("option1");
-    const option2Button = document.getElementById("option2");
+    let score = 0;
+    let isWordColorCorrect = true; // Бұл дұрыс жауаптың кезек-кезек өзгеруін қадағалайды
+    let currentColor = {};
+
+    const colorNameElement = document.getElementById("colorName");
+    const answersElement = document.getElementById("answers");
     const scoreElement = document.getElementById("score");
+    const gameElement = document.getElementById("game");
     const gameOverElement = document.getElementById("gameOver");
     const finalScoreElement = document.getElementById("finalScore");
 
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
+    function startGame() {
+      score = 0;
+      isWordColorCorrect = true;
+      gameOverElement.style.display = "none";
+      gameElement.style.display = "block";
+      generateColor();
     }
 
-    function generateNewQuestion() {
-      if (isGameOver) return;
-
-      currentIndex = Math.floor(Math.random() * colors.length);
+    function generateColor() {
+      const wordColor = colors[Math.floor(Math.random() * colors.length)];
       const textColor = colors[Math.floor(Math.random() * colors.length)];
-      colorWordElement.textContent = colors[currentIndex];
-      colorWordElement.style.color = textColor;
 
-      const correctAnswer = isNextAnswerColor ? textColor : colors[currentIndex];
-      const wrongAnswer = colors.find(color => color !== correctAnswer);
+      currentColor = {
+        name: wordColor.name,
+        color: textColor.color,
+        textName: textColor.name,
+      };
 
-      const options = shuffleArray([correctAnswer, wrongAnswer]);
-      option1Button.textContent = options[0];
-      option2Button.textContent = options[1];
+      colorNameElement.textContent = wordColor.name;
+      colorNameElement.style.color = textColor.color;
 
-      option1Button.dataset.correct = options[0] === correctAnswer ? "true" : "false";
-      option2Button.dataset.correct = options[1] === correctAnswer ? "true" : "false";
+      generateAnswers();
     }
 
-    function checkAnswer(option) {
-      if (isGameOver) return;
+    function generateAnswers() {
+      answersElement.innerHTML = "";
 
-      const isCorrect = option === 1 
-        ? option1Button.dataset.correct === "true" 
-        : option2Button.dataset.correct === "true";
+      const correctAnswer = isWordColorCorrect
+        ? currentColor.name
+        : currentColor.textName;
 
-      if (isCorrect) {
+      const incorrectAnswer = isWordColorCorrect
+        ? currentColor.textName
+        : currentColor.name;
+
+      [correctAnswer, incorrectAnswer]
+        .sort(() => Math.random() - 0.5)
+        .forEach((answer) => {
+          const button = document.createElement("button");
+          button.textContent = answer;
+          button.onclick = () => checkAnswer(answer, correctAnswer);
+          answersElement.appendChild(button);
+        });
+    }
+
+    function checkAnswer(answer, correctAnswer) {
+      if (answer === correctAnswer) {
         score++;
         scoreElement.textContent = `Ұпай: ${score}`;
-        isNextAnswerColor = !isNextAnswerColor; // Кезекті ауыстыру
-        generateNewQuestion();
+        isWordColorCorrect = !isWordColorCorrect; // Жауап кезегін ауыстыру
+        generateColor();
       } else {
         endGame();
       }
     }
 
     function endGame() {
-      isGameOver = true;
+      gameElement.style.display = "none";
       gameOverElement.style.display = "block";
       finalScoreElement.textContent = `Сіздің ұпайыңыз: ${score}`;
     }
 
     function restartGame() {
-      score = 0;
-      isGameOver = false;
-      isNextAnswerColor = true;
-      scoreElement.textContent = `Ұпай: ${score}`;
-      gameOverElement.style.display = "none";
-      generateNewQuestion();
+      startGame();
     }
 
-    generateNewQuestion();
+    startGame();
   </script>
 </body>
 </html>
