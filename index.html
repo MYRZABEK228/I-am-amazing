@@ -100,7 +100,6 @@
       currentColor = {
         name: wordColor.name,
         color: textColor.color,
-        textName: textColor.name,
       };
 
       colorNameElement.textContent = wordColor.name;
@@ -118,10 +117,10 @@
         correctAnswer = currentColor.color;
       } else {
         // Екінші турда әріптің түсі дұрыс болады
-        correctAnswer = currentColor.textName;
+        correctAnswer = currentColor.name;
       }
 
-      const incorrectAnswer = round === 1 ? currentColor.textName : currentColor.color;
+      const incorrectAnswer = round === 1 ? currentColor.name : currentColor.color;
 
       // Жауаптарды араластыру
       [correctAnswer, incorrectAnswer]
