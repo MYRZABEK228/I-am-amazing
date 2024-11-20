@@ -73,8 +73,10 @@
     ];
 
     let score = 0;
-    let isWordColorCorrect = true; // Бұл дұрыс жауаптың кезек-кезек өзгеруін қадағалайды
+    let isWordColorCorrect = false; // Бастапқыда екінші тур болмаған соң бірінші турда "әріптің түсі" дұрыс болады
     let currentColor = {};
+    let correctAnswersInRound = 0;
+    let round = 1;
 
     const colorNameElement = document.getElementById("colorName");
     const answersElement = document.getElementById("answers");
@@ -85,7 +87,9 @@
 
     function startGame() {
       score = 0;
-      isWordColorCorrect = true;
+      correctAnswersInRound = 0;
+      round = 1;
+      isWordColorCorrect = false;
       gameOverElement.style.display = "none";
       gameElement.style.display = "block";
       generateColor();
@@ -111,12 +115,12 @@
       answersElement.innerHTML = "";
 
       const correctAnswer = isWordColorCorrect
-        ? currentColor.name
-        : currentColor.textName;
+        ? currentColor.textName // Екінші турда сөздің түсі дұрыс
+        : currentColor.color; // Бірінші турда әріптің түсі дұрыс
 
       const incorrectAnswer = isWordColorCorrect
-        ? currentColor.textName
-        : currentColor.name;
+        ? currentColor.color
+        : currentColor.textName;
 
       [correctAnswer, incorrectAnswer]
         .sort(() => Math.random() - 0.5)
@@ -131,9 +135,20 @@
     function checkAnswer(answer, correctAnswer) {
       if (answer === correctAnswer) {
         score++;
+        correctAnswersInRound++;
         scoreElement.textContent = `Ұпай: ${score}`;
-        isWordColorCorrect = !isWordColorCorrect; // Жауап кезегін ауыстыру
-        generateColor();
+
+        if (correctAnswersInRound >= 15) {
+          round++;
+          if (round > 2) {
+            endGame();
+          } else {
+            isWordColorCorrect = !isWordColorCorrect; // Турды ауыстыру
+            generateColor();
+          }
+        } else {
+          generateColor();
+        }
       } else {
         endGame();
       }
