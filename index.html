@@ -130,11 +130,11 @@
       let correctAnswer;
       let correctAnswerText;
       if (round === 1) {
-        // Бірінші турда жазылған сөздің түсі дұрыс болады
+        // Бірінші турда сөздің түсі дұрыс болады
         correctAnswer = currentColor.color; 
         correctAnswerText = currentColor.name;
       } else {
-        // Екінші турда жазылған сөздің түсі мен әріптің түсі сәйкес болмауы тиіс
+        // Екінші турда сөздің түсі мен әріптің түсі сәйкес келуі тиіс
         correctAnswer = currentColor.textName; 
         correctAnswerText = currentColor.color;
       }
@@ -146,27 +146,15 @@
         .sort(() => Math.random() - 0.5)
         .forEach((answer) => {
           const button = document.createElement("button");
-          // Егер дұрыс жауап болса, оны батырманың текстіне жазамыз
           button.textContent = answer === 'red' ? 'Қызыл' : 
                                answer === 'blue' ? 'Көк' :
                                answer === 'green' ? 'Жасыл' : 
                                answer === 'yellow' ? 'Сары' : 
                                answer === 'purple' ? 'Күлгін' : 'Қара';
+          button.style.backgroundColor = answer === currentColor.color ? currentColor.color : currentColor.textName; // Сөздің түсі
           button.onclick = () => checkAnswer(answer, correctAnswer);
           answersElement.appendChild(button);
         });
-
-      // Батырмалар
-      const button1 = document.createElement("button");
-      button1.textContent = correctAnswerText; // Бірінші батырма
-      button1.style.backgroundColor = currentColor.color; // Әріптің түсіне сәйкес
-
-      const button2 = document.createElement("button");
-      button2.textContent = correctAnswer; // Екінші батырма
-      button2.style.backgroundColor = currentColor.textName; // Жазылған сөздің түсіне сәйкес
-
-      answersElement.appendChild(button1);
-      answersElement.appendChild(button2);
     }
 
     function checkAnswer(answer, correctAnswer) {
