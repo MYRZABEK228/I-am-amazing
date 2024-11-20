@@ -43,10 +43,10 @@
       margin-top: 20px;
       font-size: 1.2rem;
     }
-    #gameOver {
+    #roundOver {
       display: none;
     }
-    #roundOver {
+    #gameOver {
       display: none;
     }
   </style>
@@ -151,7 +151,6 @@
                                answer === 'green' ? 'Жасыл' : 
                                answer === 'yellow' ? 'Сары' : 
                                answer === 'purple' ? 'Күлгін' : 'Қара';
-          button.style.backgroundColor = answer === currentColor.color ? currentColor.color : currentColor.textName; // Сөздің түсі
           button.onclick = () => checkAnswer(answer, correctAnswer);
           answersElement.appendChild(button);
         });
