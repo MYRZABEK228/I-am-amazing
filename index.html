@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Түстер ойыны</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0d1117;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #ffcc00;
+    }
+
+    #colorName {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 20px;
+    }
+
+    button {
+      background: #00b4d8;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin: 10px;
+    }
+
+    button:hover {
+      background: #0077b6;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #score {
+      margin-top: 20px;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Түстер сәйкестігін табыңыз</h1>
+  <p id="instructions">Түстің аты мен түсі сәйкес келсе, "Сәйкес!" батырмасын басыңыз. Қателессеңіз, ойын бітеді.</p>
+  <div id="game">
+    <div id="colorName"></div>
+    <button id="matchButton" onclick="checkMatch(true)">Сәйкес!</button>
+    <button id="notMatchButton" onclick="checkMatch(false)">Сәйкес емес!</button>
+    <p id="score">Ұпай: 0</p>
+  </div>
+  <div id="gameOver" class="hidden">
+    <h2>Ойын бітті!</h2>
+    <p id="finalScore"></p>
+    <button onclick="restartGame()">Қайта бастау</button>
+  </div>
+
+  <script>
+    const colors = [
+      { name: "Қызыл", color: "red" },
+      { name: "Көк", color: "blue" },
+      { name: "Сары", color: "yellow" },
+      { name: "Жасыл", color: "green" },
+      { name: "Күлгін", color: "purple" },
+      { name: "Қара", color: "black" },
+    ];
+
+    let score = 0;
+    let currentColor = {};
+    let isMatching = false;
+
+    const colorNameElement = document.getElementById("colorName");
+    const scoreElement = document.getElementById("score");
+    const gameElement = document.getElementById("game");
+    const gameOverElement = document.getElementById("gameOver");
+    const finalScoreElement = document.getElementById("finalScore");
+
+    function startGame() {
+      score = 0;
+      gameOverElement.classList.add("hidden");
+      gameElement.classList.remove("hidden");
+      generateColor();
+    }
+
+    function generateColor() {
+      const randomName = colors[Math.floor(Math.random() * colors.length)];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+      currentColor = {
+        name: randomName.name,
+        color: randomColor.color,
+      };
+
+      isMatching = randomName.name === randomColor.name;
+
+      colorNameElement.textContent = currentColor.name;
+      colorNameElement.style.color = currentColor.color;
+    }
+
+    function checkMatch(match) {
+      if (match === isMatching) {
+        score++;
+        scoreElement.textContent = `Ұпай: ${score}`;
+        generateColor();
+      } else {
+        endGame();
+      }
+    }
+
+    function endGame() {
+      gameElement.classList.add("hidden");
+      gameOverElement.classList.remove("hidden");
+      finalScoreElement.textContent = `Сіздің соңғы ұпайыңыз: ${score}`;
+    }
+
+    function restartGame() {
+      startGame();
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
