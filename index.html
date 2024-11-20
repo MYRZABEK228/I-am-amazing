@@ -46,6 +46,9 @@
     #gameOver {
       display: none;
     }
+    #roundOver {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -55,6 +58,11 @@
     <div id="colorName"></div>
     <div id="answers"></div>
     <p id="score">Ұпай: 0</p>
+  </div>
+  <div id="roundOver">
+    <h2>1-ші тур аяқталды!</h2>
+    <p>Енді 2-ші турға өту үшін төмендегі батырманы басыңыз.</p>
+    <button onclick="startSecondRound()">2-ші турға өту</button>
   </div>
   <div id="gameOver">
     <h2>Ойын бітті!</h2>
@@ -76,11 +84,13 @@
     let correctAnswersInRound = 0;
     let round = 1; // 1 - бірінші тур, 2 - екінші тур
     let currentColor = {};
+    let gameStarted = false;
 
     const colorNameElement = document.getElementById("colorName");
     const answersElement = document.getElementById("answers");
     const scoreElement = document.getElementById("score");
     const gameElement = document.getElementById("game");
+    const roundOverElement = document.getElementById("roundOver");
     const gameOverElement = document.getElementById("gameOver");
     const finalScoreElement = document.getElementById("finalScore");
 
@@ -88,7 +98,9 @@
       score = 0;
       correctAnswersInRound = 0;
       round = 1; // Ойынның бірінші туры
+      gameStarted = true;
       gameOverElement.style.display = "none";
+      roundOverElement.style.display = "none";
       gameElement.style.display = "block";
       generateColor();
     }
@@ -148,11 +160,11 @@
         scoreElement.textContent = `Ұпай: ${score}`;
 
         if (correctAnswersInRound >= 15) {
-          round++; // Келесі турға өту
-          if (round > 2) {
-            endGame(); // Екінші турдан кейін ойын аяқталады
+          if (round === 1) {
+            roundOverElement.style.display = "block"; // Бірінші тур аяқталды
+            gameElement.style.display = "none"; // Ойын экраны жасырылды
           } else {
-            generateColor(); // Турды ауыстырған соң жаңа түстерді көрсетеміз
+            endGame(); // Егер екінші турдан кейін дұрыс жауап болса, ойын аяқталады
           }
         } else {
           generateColor(); // Дұрыс жауап бергенде қайтадан түстерді көрсету
@@ -166,6 +178,13 @@
       gameElement.style.display = "none";
       gameOverElement.style.display = "block";
       finalScoreElement.textContent = `Сіздің ұпайыңыз: ${score}`;
+    }
+
+    function startSecondRound() {
+      round = 2; // Екінші турға өту
+      roundOverElement.style.display = "none"; // Бірінші турдың аяқталуы жасырылды
+      gameElement.style.display = "block"; // Ойын экраны көрсетілді
+      generateColor(); // Екінші турға арналған түстер
     }
 
     function restartGame() {
