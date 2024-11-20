@@ -100,6 +100,7 @@
       currentColor = {
         name: wordColor.name,
         color: textColor.color,
+        textName: textColor.name,
       };
 
       colorNameElement.textContent = wordColor.name;
@@ -117,17 +118,21 @@
         correctAnswer = currentColor.color;
       } else {
         // Екінші турда әріптің түсі дұрыс болады
-        correctAnswer = currentColor.name;
+        correctAnswer = currentColor.textName;
       }
 
-      const incorrectAnswer = round === 1 ? currentColor.name : currentColor.color;
+      const incorrectAnswer = round === 1 ? currentColor.textName : currentColor.color;
 
       // Жауаптарды араластыру
       [correctAnswer, incorrectAnswer]
         .sort(() => Math.random() - 0.5)
         .forEach((answer) => {
           const button = document.createElement("button");
-          button.textContent = answer;
+          button.textContent = answer === 'red' ? 'Қызыл' : 
+                               answer === 'blue' ? 'Көк' :
+                               answer === 'green' ? 'Жасыл' : 
+                               answer === 'yellow' ? 'Сары' : 
+                               answer === 'purple' ? 'Күлгін' : 'Қара';
           button.onclick = () => checkAnswer(answer, correctAnswer);
           answersElement.appendChild(button);
         });
