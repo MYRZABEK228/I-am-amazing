@@ -73,10 +73,9 @@
     ];
 
     let score = 0;
-    let isWordColorCorrect = false; // Бастапқыда екінші тур болмаған соң бірінші турда "әріптің түсі" дұрыс болады
-    let currentColor = {};
     let correctAnswersInRound = 0;
-    let round = 1;
+    let round = 1; // 1 - бірінші тур, 2 - екінші тур
+    let currentColor = {};
 
     const colorNameElement = document.getElementById("colorName");
     const answersElement = document.getElementById("answers");
@@ -88,8 +87,7 @@
     function startGame() {
       score = 0;
       correctAnswersInRound = 0;
-      round = 1;
-      isWordColorCorrect = false;
+      round = 1; // Ойынның бірінші туры
       gameOverElement.style.display = "none";
       gameElement.style.display = "block";
       generateColor();
@@ -114,14 +112,18 @@
     function generateAnswers() {
       answersElement.innerHTML = "";
 
-      const correctAnswer = isWordColorCorrect
-        ? currentColor.textName // Екінші турда сөздің түсі дұрыс
-        : currentColor.color; // Бірінші турда әріптің түсі дұрыс
+      let correctAnswer;
+      if (round === 1) {
+        // Бірінші турда жазылған сөздің түсі дұрыс болады
+        correctAnswer = currentColor.color;
+      } else {
+        // Екінші турда әріптің түсі дұрыс болады
+        correctAnswer = currentColor.textName;
+      }
 
-      const incorrectAnswer = isWordColorCorrect
-        ? currentColor.color
-        : currentColor.textName;
+      const incorrectAnswer = round === 1 ? currentColor.textName : currentColor.color;
 
+      // Жауаптарды араластыру
       [correctAnswer, incorrectAnswer]
         .sort(() => Math.random() - 0.5)
         .forEach((answer) => {
@@ -139,18 +141,17 @@
         scoreElement.textContent = `Ұпай: ${score}`;
 
         if (correctAnswersInRound >= 15) {
-          round++;
+          round++; // Келесі турға өту
           if (round > 2) {
-            endGame();
+            endGame(); // Екінші турдан кейін ойын аяқталады
           } else {
-            isWordColorCorrect = !isWordColorCorrect; // Турды ауыстыру
-            generateColor();
+            generateColor(); // Турды ауыстырған соң жаңа түстерді көрсетеміз
           }
         } else {
-          generateColor();
+          generateColor(); // Дұрыс жауап бергенде қайтадан түстерді көрсету
         }
       } else {
-        endGame();
+        endGame(); // Қате жауап берілсе, ойын басталады
       }
     }
 
@@ -161,10 +162,10 @@
     }
 
     function restartGame() {
-      startGame();
+      startGame(); // Ойынды қайтадан бастау
     }
 
-    startGame();
+    startGame(); // Ойынды бастау
   </script>
 </body>
 </html>
