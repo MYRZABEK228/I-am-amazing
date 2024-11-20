@@ -3,123 +3,127 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Қай түс?</title>
+  <title>Түс ойыны</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #1e293b;
-      color: white;
       text-align: center;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      margin-top: 50px;
     }
+
     h1 {
-      color: #22d3ee;
+      font-size: 3em;
+      margin-bottom: 10px;
     }
-    #colorName {
-      font-size: 2rem;
-      margin: 20px 0;
-      font-weight: bold;
+
+    h2 {
+      font-size: 1.5em;
+      margin-bottom: 20px;
     }
-    button {
-      margin: 10px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
+
+    .answers button {
+      font-size: 1.2em;
+      padding: 10px;
+      margin: 5px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      border: none;
+      width: 200px;
+      border-radius: 5px;
     }
-    button:hover {
-      background-color: #2563eb;
+
+    .answers button:hover {
+      background-color: #f0f0f0;
+    }
+
+    .correct {
+      background-color: #4CAF50;
       color: white;
     }
-    #score {
+
+    .incorrect {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .score {
+      font-size: 1.5em;
       margin-top: 20px;
-      font-size: 1.2rem;
     }
-    #roundOver {
+
+    #nextRoundBtn {
+      font-size: 1.2em;
+      padding: 10px;
+      margin: 20px;
+      cursor: pointer;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 5px;
       display: none;
     }
-    #gameOver {
+
+    #gameOverBtn {
+      font-size: 1.2em;
+      padding: 10px;
+      margin: 20px;
+      cursor: pointer;
+      border: none;
+      background-color: #f44336;
+      color: white;
+      border-radius: 5px;
       display: none;
     }
+
   </style>
 </head>
 <body>
+
   <h1>Қай түс?</h1>
-  <p>Сөздің түсін дұрыс анықтап, жауап беріңіз!</p>
-  <div id="game">
-    <div id="colorName"></div>
-    <div id="answers"></div>
-    <p id="score">Ұпай: 0</p>
-  </div>
-  <div id="roundOver">
-    <h2>1-ші тур аяқталды!</h2>
-    <p>Енді 2-ші турға өту үшін төмендегі батырманы басыңыз.</p>
-    <button onclick="startSecondRound()">2-ші турға өту</button>
-  </div>
-  <div id="gameOver">
-    <h2>Ойын бітті!</h2>
-    <p id="finalScore"></p>
-    <button onclick="restartGame()">Қайта бастау</button>
-  </div>
+  <h2>Сөздің түсін дұрыс анықтап, жауап беріңіз!</h2>
+
+  <div id="score" class="score">Ұпай: 0</div>
+  <div id="question"></div>
+  <div id="answers" class="answers"></div>
+
+  <button id="nextRoundBtn">2 турға өту</button>
+  <button id="gameOverBtn">Қателестіңіз! Қайтадан бастау</button>
 
   <script>
     const colors = [
+      { name: "Қара", color: "black" },
       { name: "Қызыл", color: "red" },
       { name: "Көк", color: "blue" },
       { name: "Жасыл", color: "green" },
       { name: "Сары", color: "yellow" },
       { name: "Күлгін", color: "purple" },
-      { name: "Қара", color: "black" },
     ];
 
     let score = 0;
-    let correctAnswersInRound = 0;
-    let round = 1; // 1 - бірінші тур, 2 - екінші тур
-    let currentColor = {};
-    let gameStarted = false;
+    let round = 1;
+    let currentColor;
+    let correctAnswer;
 
-    const colorNameElement = document.getElementById("colorName");
-    const answersElement = document.getElementById("answers");
     const scoreElement = document.getElementById("score");
-    const gameElement = document.getElementById("game");
-    const roundOverElement = document.getElementById("roundOver");
-    const gameOverElement = document.getElementById("gameOver");
-    const finalScoreElement = document.getElementById("finalScore");
+    const questionElement = document.getElementById("question");
+    const answersElement = document.getElementById("answers");
+    const nextRoundBtn = document.getElementById("nextRoundBtn");
+    const gameOverBtn = document.getElementById("gameOverBtn");
 
-    function startGame() {
-      score = 0;
-      correctAnswersInRound = 0;
-      round = 1; // Ойынның бірінші туры
-      gameStarted = true;
-      gameOverElement.style.display = "none";
-      roundOverElement.style.display = "none";
-      gameElement.style.display = "block";
-      generateColor();
-    }
+    function startRound() {
+      currentColor = colors[Math.floor(Math.random() * colors.length)];
 
-    function generateColor() {
-      const wordColor = colors[Math.floor(Math.random() * colors.length)];
-      let textColor;
-      do {
-        textColor = colors[Math.floor(Math.random() * colors.length)];
-      } while (wordColor.color === textColor.color); // Әріптің түсі сөздің түсінен өзгеше болуы керек
+      // Жасырын сөздің дұрыс түсін анықтау
+      let correctAnswerText;
+      if (round === 1) {
+        correctAnswer = currentColor.color; // 1-турда дұрыс жауап түстің өзі
+        correctAnswerText = currentColor.name;
+      } else {
+        correctAnswer = currentColor.name;  // 2-турда дұрыс жауап түстің аты
+        correctAnswerText = currentColor.color;
+      }
 
-      currentColor = {
-        name: wordColor.name,
-        color: textColor.color,
-        textName: textColor.name,
-      };
-
-      colorNameElement.textContent = wordColor.name; 
-      colorNameElement.style.color = textColor.color; // Жазылған сөздің түсі
+      // Сұрақты көрсетеміз
+      questionElement.innerHTML = `Жасырын сөз: <span style="color:${correctAnswer}">${currentColor.name}</span>`;
 
       generateAnswers();
     }
@@ -127,74 +131,71 @@
     function generateAnswers() {
       answersElement.innerHTML = "";
 
-      let correctAnswer;
       let correctAnswerText;
+      let correctAnswerColor;
       if (round === 1) {
-        // Бірінші турда сөздің түсі дұрыс болады
-        correctAnswer = currentColor.color; 
         correctAnswerText = currentColor.name;
+        correctAnswerColor = currentColor.color;
       } else {
-        // Екінші турда сөздің түсі мен әріптің түсі сәйкес келуі тиіс
-        correctAnswer = currentColor.textName; 
         correctAnswerText = currentColor.color;
+        correctAnswerColor = currentColor.name;
       }
 
-      const incorrectAnswer = round === 1 ? currentColor.textName : currentColor.color;
+      const incorrectAnswer = round === 1 ? currentColor.color : currentColor.name;
 
       // Жауаптарды араластыру
-      [correctAnswer, incorrectAnswer]
+      [correctAnswerText, incorrectAnswer]
         .sort(() => Math.random() - 0.5)
         .forEach((answer) => {
           const button = document.createElement("button");
-          button.textContent = answer === 'red' ? 'Қызыл' : 
-                               answer === 'blue' ? 'Көк' :
-                               answer === 'green' ? 'Жасыл' : 
-                               answer === 'yellow' ? 'Сары' : 
-                               answer === 'purple' ? 'Күлгін' : 'Қара';
-          button.onclick = () => checkAnswer(answer, correctAnswer);
+          button.textContent = answer;
+          button.style.backgroundColor = answer === currentColor.color ? correctAnswerColor : "white"; 
+          button.onclick = () => checkAnswer(answer, correctAnswerText);
           answersElement.appendChild(button);
         });
+
+      // Екінші батырма: Жасырын сөздің түсін немесе атын көрсетеміз
+      const secondButton = document.createElement("button");
+      secondButton.textContent = correctAnswerText;
+      secondButton.style.backgroundColor = correctAnswerColor;
+      secondButton.onclick = () => checkAnswer(correctAnswerText, correctAnswerText);
+      answersElement.appendChild(secondButton);
     }
 
-    function checkAnswer(answer, correctAnswer) {
-      if (answer === correctAnswer) {
-        score++;
-        correctAnswersInRound++;
-        scoreElement.textContent = `Ұпай: ${score}`;
+    function checkAnswer(answer, correctAnswerText) {
+      const buttons = document.querySelectorAll("button");
+      buttons.forEach(button => {
+        button.disabled = true; // Барлық батырмаларды өшіру
+      });
 
-        if (correctAnswersInRound >= 15) {
-          if (round === 1) {
-            roundOverElement.style.display = "block"; // Бірінші тур аяқталды
-            gameElement.style.display = "none"; // Ойын экраны жасырылды
-          } else {
-            endGame(); // Егер екінші турдан кейін дұрыс жауап болса, ойын аяқталады
-          }
-        } else {
-          generateColor(); // Дұрыс жауап бергенде қайтадан түстерді көрсету
+      if (answer === correctAnswerText) {
+        score++;
+        scoreElement.innerHTML = `Ұпай: ${score}`;
+        if (score === 15) {
+          nextRoundBtn.style.display = "inline-block";
         }
       } else {
-        endGame(); // Қате жауап берілсе, ойын басталады
+        gameOverBtn.style.display = "inline-block";
       }
     }
 
-    function endGame() {
-      gameElement.style.display = "none";
-      gameOverElement.style.display = "block";
-      finalScoreElement.textContent = `Сіздің ұпайыңыз: ${score}`;
-    }
+    nextRoundBtn.addEventListener("click", () => {
+      round = 2;
+      nextRoundBtn.style.display = "none";
+      startRound();
+    });
 
-    function startSecondRound() {
-      round = 2; // Екінші турға өту
-      roundOverElement.style.display = "none"; // Бірінші турдың аяқталуы жасырылды
-      gameElement.style.display = "block"; // Ойын экраны көрсетілді
-      generateColor(); // Екінші турға арналған түстер
-    }
+    gameOverBtn.addEventListener("click", () => {
+      score = 0;
+      round = 1;
+      scoreElement.innerHTML = `Ұпай: ${score}`;
+      gameOverBtn.style.display = "none";
+      startRound();
+    });
 
-    function restartGame() {
-      startGame(); // Ойынды қайтадан бастау
-    }
+    // Ойынды бастау
+    startRound();
 
-    startGame(); // Ойынды бастау
   </script>
 </body>
 </html>
