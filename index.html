@@ -113,12 +113,15 @@
       answersElement.innerHTML = "";
 
       let correctAnswer;
+      let correctAnswerText;
       if (round === 1) {
-        // Бірінші турда жазылған сөздің түсі дұрыс болады
-        correctAnswer = currentColor.color;
+        // Бірінші турда сөздің түсі дұрыс болады
+        correctAnswer = currentColor.color; 
+        correctAnswerText = currentColor.name;
       } else {
-        // Екінші турда әріптің түсі дұрыс болады
-        correctAnswer = currentColor.textName;
+        // Екінші турда сөздің түсі мен әріптің түсі сәйкес келуі тиіс
+        correctAnswer = currentColor.textName; 
+        correctAnswerText = currentColor.color;
       }
 
       const incorrectAnswer = round === 1 ? currentColor.textName : currentColor.color;
