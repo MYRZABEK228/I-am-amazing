@@ -1,201 +1,128 @@
-<!DOCTYPE html>
-<html lang="kk">
+<!DOCTYPE html><html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Түс ойыны</title>
+  <title>С Днём Рождения, Сымбат!</title>
   <style>
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #ffe6f0, #f2e6ff);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(8px);
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
       text-align: center;
-      margin-top: 50px;
+      position: relative;
+      overflow: hidden;
     }
-
     h1 {
-      font-size: 3em;
+      font-size: 28px;
       margin-bottom: 10px;
+      color: #d63384;
     }
-
-    h2 {
-      font-size: 1.5em;
-      margin-bottom: 20px;
+    p {
+      font-size: 16px;
+      color: #555;
     }
-
-    .answers button {
-      font-size: 1.2em;
-      padding: 10px;
-      margin: 5px;
+    .gift {
+      margin: 30px auto;
+      width: 120px;
+      height: 120px;
+      background: #ffda77;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 50px;
       cursor: pointer;
-      border: none;
-      width: 200px;
-      border-radius: 5px;
+      transition: transform 0.3s;
     }
-
-    .answers button:hover {
-      background-color: #f0f0f0;
+    .gift:hover {
+      transform: scale(1.05);
     }
-
-    .correct {
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    .incorrect {
-      background-color: #f44336;
-      color: white;
-    }
-
-    .score {
-      font-size: 1.5em;
+    .message {
       margin-top: 20px;
-    }
-
-    #nextRoundBtn {
-      font-size: 1.2em;
-      padding: 10px;
-      margin: 20px;
-      cursor: pointer;
-      border: none;
-      background-color: #4CAF50;
-      color: white;
-      border-radius: 5px;
+      font-weight: bold;
+      color: #444;
       display: none;
     }
-
-    #gameOverBtn {
-      font-size: 1.2em;
-      padding: 10px;
-      margin: 20px;
-      cursor: pointer;
-      border: none;
-      background-color: #f44336;
-      color: white;
-      border-radius: 5px;
-      display: none;
+    .balloon {
+      position: absolute;
+      bottom: -150px;
+      width: 60px;
+      height: 80px;
+      border-radius: 50%;
+      background: red;
+      animation: float 10s linear infinite;
     }
-
+    @keyframes float {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-110vh); opacity: 0; }
+    }
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 16px;
+      opacity: 0.9;
+      animation: confettiFall linear forwards;
+    }
+    @keyframes confettiFall {
+      to { transform: translateY(110vh) rotate(360deg); opacity: 0.9; }
+    }
   </style>
 </head>
 <body>
-
-  <h1>Қай түс?</h1>
-  <h2>Сөздің түсін дұрыс анықтап, жауап беріңіз!</h2>
-
-  <div id="score" class="score">Ұпай: 0</div>
-  <div id="question"></div>
-  <div id="answers" class="answers"></div>
-
-  <button id="nextRoundBtn">2 турға өту</button>
-  <button id="gameOverBtn">Қателестіңіз! Қайтадан бастау</button>
-
-  <script>
-    const colors = [
-      { name: "Қара", color: "black" },
-      { name: "Қызыл", color: "red" },
-      { name: "Көк", color: "blue" },
-      { name: "Жасыл", color: "green" },
-      { name: "Сары", color: "yellow" },
-      { name: "Күлгін", color: "purple" },
-    ];
-
-    let score = 0;
-    let round = 1;
-    let currentColor;
-    let correctAnswer;
-
-    const scoreElement = document.getElementById("score");
-    const questionElement = document.getElementById("question");
-    const answersElement = document.getElementById("answers");
-    const nextRoundBtn = document.getElementById("nextRoundBtn");
-    const gameOverBtn = document.getElementById("gameOverBtn");
-
-    function startRound() {
-      currentColor = colors[Math.floor(Math.random() * colors.length)];
-
-      // Жасырын сөздің дұрыс түсін анықтау
-      let correctAnswerText;
-      if (round === 1) {
-        correctAnswer = currentColor.color; // 1-турда дұрыс жауап түстің өзі
-        correctAnswerText = currentColor.name;
-      } else {
-        correctAnswer = currentColor.name;  // 2-турда дұрыс жауап түстің аты
-        correctAnswerText = currentColor.color;
-      }
-
-      // Сұрақты көрсетеміз
-      questionElement.innerHTML = `Жасырын сөз: <span style="color:${correctAnswer}">${currentColor.name}</span>`;
-
-      generateAnswers();
+  <div class="card">
+    <h1>С Днём Рождения, Сымбат! 🎉</h1>
+    <p>Пусть этот день будет ярким, радостным и запоминающимся!</p>
+    <div class="gift" onclick="openGift()">🎁</div>
+    <div id="message" class="message">Сюрприз! Желаю счастья, здоровья и исполнения всех мечт ❤️</div>
+  </div>  <script>
+    function openGift() {
+      const msg = document.getElementById("message");
+      msg.style.display = "block";
+      createConfetti();
     }
 
-    function generateAnswers() {
-      answersElement.innerHTML = "";
-
-      let correctAnswerText;
-      let correctAnswerColor;
-      if (round === 1) {
-        correctAnswerText = currentColor.name;
-        correctAnswerColor = currentColor.color;
-      } else {
-        correctAnswerText = currentColor.color;
-        correctAnswerColor = currentColor.name;
-      }
-
-      const incorrectAnswer = round === 1 ? currentColor.color : currentColor.name;
-
-      // Жауаптарды араластыру
-      [correctAnswerText, incorrectAnswer]
-        .sort(() => Math.random() - 0.5)
-        .forEach((answer) => {
-          const button = document.createElement("button");
-          button.textContent = answer;
-          button.style.backgroundColor = answer === currentColor.color ? correctAnswerColor : "white"; 
-          button.onclick = () => checkAnswer(answer, correctAnswerText);
-          answersElement.appendChild(button);
-        });
-
-      // Екінші батырма: Жасырын сөздің түсін немесе атын көрсетеміз
-      const secondButton = document.createElement("button");
-      secondButton.textContent = correctAnswerText;
-      secondButton.style.backgroundColor = correctAnswerColor;
-      secondButton.onclick = () => checkAnswer(correctAnswerText, correctAnswerText);
-      answersElement.appendChild(secondButton);
-    }
-
-    function checkAnswer(answer, correctAnswerText) {
-      const buttons = document.querySelectorAll("button");
-      buttons.forEach(button => {
-        button.disabled = true; // Барлық батырмаларды өшіру
-      });
-
-      if (answer === correctAnswerText) {
-        score++;
-        scoreElement.innerHTML = `Ұпай: ${score}`;
-        if (score === 15) {
-          nextRoundBtn.style.display = "inline-block";
-        }
-      } else {
-        gameOverBtn.style.display = "inline-block";
+    function createConfetti() {
+      for (let i = 0; i < 60; i++) {
+        const confetti = document.createElement("div");
+        confetti.classList.add("confetti");
+        confetti.style.background = randomColor();
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.top = "-10vh";
+        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+        confetti.style.animationDuration = 3 + Math.random() * 3 + "s";
+        confetti.style.animationDelay = Math.random() * 1 + "s";
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 7000);
       }
     }
 
-    nextRoundBtn.addEventListener("click", () => {
-      round = 2;
-      nextRoundBtn.style.display = "none";
-      startRound();
-    });
+    function randomColor() {
+      const colors = ["#FF6B6B", "#FFD166", "#06D6A0", "#4D96FF", "#C084FC"];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
 
-    gameOverBtn.addEventListener("click", () => {
-      score = 0;
-      round = 1;
-      scoreElement.innerHTML = `Ұпай: ${score}`;
-      gameOverBtn.style.display = "none";
-      startRound();
-    });
-
-    // Ойынды бастау
-    startRound();
-
-  </script>
-</body>
+    // Balloons
+    for (let i = 0; i < 5; i++) {
+      const balloon = document.createElement("div");
+      balloon.classList.add("balloon");
+      balloon.style.left = Math.random() * 90 + "vw";
+      balloon.style.background = randomColor();
+      balloon.style.animationDuration = 8 + Math.random() * 5 + "s";
+      document.body.appendChild(balloon);
+    }
+  </script></body>
 </html>
